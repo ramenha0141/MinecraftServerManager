@@ -1,25 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
-
-const { myAPI } = window;
+import React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
 
 export const App = () => {
-  const [count, setCount] = useState(0);
-
-  const onCountUp = () => setCount((count) => count + 1);
-  const onCountDown = () => setCount((count) => count - 1);
-
-  useEffect(() => {
-    myAPI.update(count);
-  }, [count]);
-
-  return (
-    <div className="container">
-      <h1>{count}</h1>
-      <div>
-        <button onClick={onCountDown}>&#x25BC;</button>
-        <button onClick={onCountUp}>&#x25B2;</button>
-      </div>
-    </div>
-  );
+    return (
+        <Box sx={{ flexGrow: 1 }}>
+            <AppBar position="static">
+                <Toolbar>
+                    <IconButton
+                        size="large"
+                        edge="start"
+                        color="inherit"
+                        aria-label="menu"
+                        sx={{ mr: 2 }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        Minecraft Server Manager
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+        </Box>
+    );
 };
