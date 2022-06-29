@@ -1,9 +1,9 @@
 export interface IElectronAPI {
-  update: (count: number) => void;
+    update: (count: number) => void;
 }
 
 declare global {
-  interface Window {
-    myAPI: IElectronAPI;
-  }
+    interface Window {
+        myAPI: IElectronAPI;
+    }
 }
