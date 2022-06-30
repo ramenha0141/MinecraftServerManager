@@ -22,10 +22,6 @@ const createWindow = () => {
     },
   });
 
-  ipcMain.on('update-title', (_e, arg) => {
-    mainWindow.setTitle(`Electron React TypeScript: ${arg}`);
-  });
-
   if (isDev) {
     searchDevtools('REACT')
       .then((devtools) => {
