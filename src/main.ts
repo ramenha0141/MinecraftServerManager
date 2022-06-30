@@ -1,6 +1,6 @@
 import path from 'path';
 import { searchDevtools } from 'electron-search-devtools';
-import { BrowserWindow, app, session } from 'electron';
+import { BrowserWindow, app, session, ipcMain } from 'electron';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -20,6 +20,26 @@ const createWindow = () => {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
         },
+    });
+    ipcMain.handle('start', () => {
+        console.log('start');
+        return true;
+    });
+    ipcMain.handle('stop', () => {
+        console.log('stop');
+        return true;
+    });
+    ipcMain.on('showPerformanceWindow', () => {
+
+    });
+    ipcMain.on('showLogWindow', () => {
+
+    });
+    ipcMain.handle('getConfig', () => {
+        return {};
+    });
+    ipcMain.on('setConfig', (_, config: Config) => {
+
     });
     mainWindow.setMenuBarVisibility(false);
 

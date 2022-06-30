@@ -8,8 +8,29 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
+import SpeedIcon from '@mui/icons-material/Speed';
+import TerminalIcon from '@mui/icons-material/Terminal';
+import { useRecoilState } from 'recoil';
 
-export const App = () => {
+import { isServerRunningState } from './globalState';
+
+const ServerAPI = window.ServerAPI;
+const App = () => {
+    const [isServerRunning, setIsServerRunning] = useRecoilState(isServerRunningState);
+    const start = async () => {
+        if (!isServerRunning) {
+            if (await ServerAPI.start()) {
+                setIsServerRunning(true);
+            }
+        }
+    };
+    const stop = async () => {
+        if (isServerRunning) {
+            if (await ServerAPI.stop()) {
+                setIsServerRunning(false);
+            }
+        }
+    };
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
@@ -26,12 +47,21 @@ export const App = () => {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Minecraft Server Manager
                     </Typography>
-                    <ButtonGroup variant='contained' sx={{ mr: 16, backgroundColor: '#fff' }}>
-                        <Button variant='outlined'><PlayArrowIcon /></Button>
-                        <Button variant='outlined'><StopIcon /></Button>
+                    <ButtonGroup variant='contained' sx={{ mr: 12, backgroundColor: '#fff' }}>
+                        <Button variant='outlined'
+                            disabled={isServerRunning}
+                            onClick={start}
+                        ><PlayArrowIcon /></Button>
+                        <Button variant='outlined'
+                            disabled={!isServerRunning}
+                            onClick={stop}
+                        ><StopIcon /></Button>
+                        <Button variant='outlined'><SpeedIcon /></Button>
+                        <Button variant='outlined'><TerminalIcon /></Button>
                     </ButtonGroup>
                 </Toolbar>
             </AppBar>
         </Box>
     );
 };
+export default App;
