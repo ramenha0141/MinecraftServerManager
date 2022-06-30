@@ -1,4 +1,5 @@
 export interface ServerAPI {
+    isInstalled: () => Promise<boolean>,
     start: () => Promise<boolean>,
     stop: () => Promise<boolean>,
     showPerformanceWindow: () => void,

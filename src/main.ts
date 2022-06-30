@@ -19,7 +19,11 @@ const createWindow = () => {
     const mainWindow = new BrowserWindow({
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
+            webviewTag: true
         },
+    });
+    ipcMain.handle('isInstalled', () => {
+        return false;
     });
     ipcMain.handle('start', () => {
         console.log('start');

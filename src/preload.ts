@@ -1,6 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('ServerAPI', {
+    isInstalled: (): Promise<boolean> => {
+        return ipcRenderer.invoke('isInstalled');
+    },
     start: (): Promise<boolean> => {
         return ipcRenderer.invoke('start');
     },
