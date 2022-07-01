@@ -4,6 +4,7 @@ import axios from 'axios';
 import child_process from 'child_process';
 import { searchDevtools } from 'electron-search-devtools';
 import { BrowserWindow, app, session, ipcMain } from 'electron';
+import { Readable } from 'stream';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -35,13 +36,18 @@ const createWindow = () => {
         try {
             if (fs.existsSync(ServerPath)) fs.rmSync(ServerPath, { recursive: true });
             fs.mkdirSync(ServerPath);
-            const res = await axios.get(
+            const  { data } = await axios.get<Readable>(
                 'https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar',
-                { responseType: 'arraybuffer' }
+                { responseType: 'stream' }
             );
-            fs.writeFileSync(jarPath, Buffer.from(res.data), 'binary');
-            child_process.execSync(jarPath);
-            return true;
+            data.pipe(fs.createWriteStream(jarPath));
+            return await new Promise<boolean>((resolve) => {
+                data.on('error', () => resolve(false));
+                data.on('end', () => {
+                    child_process.execSync(`cd ${ServerPath} && java -jar ${jarPath}`);
+                    resolve(true);
+                });
+            });
         } catch (e) {
             console.log(e);
             return false;
