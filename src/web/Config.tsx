@@ -19,7 +19,7 @@ const Config = () => {
     );
     return (
         <TableContainer component={Paper} sx={{ flex: '1 1 0', overflowY: 'scroll' }}>
-            <Table>
+            <Table stickyHeader>
                 <TableHead>
                     <TableRow>
                         <TableCell>name</TableCell>
@@ -40,7 +40,10 @@ const Config = () => {
                                     ServerAPI.setConfig(newProperties);
                                 };
                                 return (
-                                    <TableRow key={name}>
+                                    <TableRow
+                                        key={name}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
                                         <TableCell>{name}</TableCell>
                                         <TableCell align='right'>
                                             <Select
