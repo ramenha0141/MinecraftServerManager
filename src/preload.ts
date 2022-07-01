@@ -1,8 +1,12 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import { Writable } from 'stream';
 
 contextBridge.exposeInMainWorld('ServerAPI', {
     isInstalled: (): Promise<boolean> => {
         return ipcRenderer.invoke('isInstalled');
+    },
+    install: (): Promise<Writable> => {
+        return ipcRenderer.invoke('install');
     },
     start: (): Promise<boolean> => {
         return ipcRenderer.invoke('start');

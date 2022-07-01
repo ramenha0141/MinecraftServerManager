@@ -1,4 +1,7 @@
 import path from 'path';
+import fs from 'fs';
+import axios from 'axios';
+import child_process from 'child_process';
 import { searchDevtools } from 'electron-search-devtools';
 import { BrowserWindow, app, session, ipcMain } from 'electron';
 
@@ -15,6 +18,9 @@ if (isDev) {
     });
 }
 
+const ServerPath = './.minecraft';
+const jarPath = path.join(ServerPath, 'server.jar');
+
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
         webPreferences: {
@@ -24,6 +30,22 @@ const createWindow = () => {
     });
     ipcMain.handle('isInstalled', () => {
         return false;
+    });
+    ipcMain.handle('install', async () => {
+        try {
+            if (fs.existsSync(ServerPath)) fs.rmSync(ServerPath, { recursive: true });
+            fs.mkdirSync(ServerPath);
+            const res = await axios.get(
+                'https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar',
+                { responseType: 'arraybuffer' }
+            );
+            fs.writeFileSync(jarPath, Buffer.from(res.data), 'binary');
+            child_process.execSync(jarPath);
+            return true;
+        } catch (e) {
+            console.log(e);
+            return false;
+        }
     });
     ipcMain.handle('start', () => {
         console.log('start');
