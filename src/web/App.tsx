@@ -16,14 +16,24 @@ import { useRecoilValue, useRecoilState } from 'recoil';
 
 import { isInstalledState, isServerRunningState } from './globalState';
 import Setup from './Setup';
-import { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
+import { Tab, Tabs } from '@mui/material';
 
 const ServerAPI = window.ServerAPI;
+
+const TabPanel = (props: { children?: any, index: number, value: number, }) => {
+    return (
+        <Box sx={{ width: '100%', height: '100%' }}>
+            {props.value === props.index && props.children}
+        </Box>
+    );
+};
 
 const App = () => {
     const isInstalled = useRecoilValue(isInstalledState);
     const [isServerRunning, setIsServerRunning] = useRecoilState(isServerRunningState);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const [tabIndex, setTabIndex] = useState<number>(0);
     const handleStart = async () => {
         if (isServerRunning) return;
         setIsProcessing(true);
@@ -40,9 +50,12 @@ const App = () => {
         }
         setIsProcessing(false);
     };
+    const handleTabChange = (_: SyntheticEvent, newTabIndex: number) => {
+        setTabIndex(newTabIndex);
+    };
     ServerAPI.getConfig().then((config) => console.log(config));
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
             <AppBar position="static">
                 <Toolbar>
                     <IconButton
@@ -57,7 +70,7 @@ const App = () => {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Minecraft Server Manager
                     </Typography>
-                    <ButtonGroup variant='contained' sx={{ mr: 12, backgroundColor: '#fff' }}>
+                    <ButtonGroup variant='contained' sx={{ mr: 10, backgroundColor: '#fff' }}>
                         <Button variant='outlined'
                             disabled={isServerRunning || isProcessing}
                             onClick={handleStart}
@@ -71,6 +84,14 @@ const App = () => {
                     </ButtonGroup>
                 </Toolbar>
             </AppBar>
+            <Box sx={{ mx: 6, flexGrow: 1 }}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs value={tabIndex} onChange={handleTabChange}>
+                        <Tab label='Config' />
+                    </Tabs>
+                </Box>
+                <TabPanel value={tabIndex} index={0}>1</TabPanel>
+            </Box>
             <Dialog
                 fullScreen
                 open={!isInstalled}
