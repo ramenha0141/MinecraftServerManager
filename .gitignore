@@ -6,3 +6,4 @@ pnpm-*.log
 yarn-*.log
 .env
 .DS_Store
+.minecraft

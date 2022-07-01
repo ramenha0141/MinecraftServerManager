@@ -34,7 +34,7 @@ const createWindow = () => {
     });
     ipcMain.handle('install', async () => {
         try {
-            if (fs.existsSync(ServerPath)) fs.rmSync(ServerPath, { recursive: true });
+            if (fs.existsSync(ServerPath)) fs.rmdirSync(ServerPath, { recursive: true });
             fs.mkdirSync(ServerPath);
             const  { data } = await axios.get<Readable>(
                 'https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar',
@@ -44,7 +44,7 @@ const createWindow = () => {
             return await new Promise<boolean>((resolve) => {
                 data.on('error', () => resolve(false));
                 data.on('end', () => {
-                    child_process.execSync(`cd ${ServerPath} && java -jar ${jarPath}`);
+                    child_process.execSync(`cd ${ServerPath} && java -jar server.jar`);
                     resolve(true);
                 });
             });

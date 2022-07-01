@@ -53,7 +53,7 @@ const Setup = () => {
                             ? (
                                 <>
                                     <webview
-                                        src='https://account.mojang.com/documents/minecraft_eula'
+                                        src='https://aka.ms/MinecraftEULA'
                                         style={{ flexGrow: 1, width: '80%' }}
                                     />
                                     <Button
