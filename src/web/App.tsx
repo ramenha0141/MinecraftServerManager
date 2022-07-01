@@ -57,7 +57,7 @@ const App = () => {
     ServerAPI.getConfig().then((config) => console.log(config));
     return (
         <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', userSelect: 'none' }}>
-            <AppBar position="static">
+            <AppBar position='static'>
                 <Toolbar>
                     <IconButton
                         size="large"

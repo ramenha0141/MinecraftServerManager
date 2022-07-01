@@ -30,7 +30,7 @@ const Config = () => {
                     {
                         Object.entries(propertiesData).map(([name, { isBool, defaultValue, detail }]) => {
                             if (isBool) {
-                                const value = properties[name] ?? defaultValue;
+                                const value = properties[name] === 'true' ?? defaultValue;
                                 return (
                                     <TableRow key={name}>
                                         <TableCell>{name}</TableCell>

@@ -25,7 +25,7 @@ const propertiesData = {
     'hardcore': _p(true, false, 'true に設定した場合、プレイヤーが死んだ際にスペクテイターモードになる'),
     'level-name': _p(false, 'world', 'ワールド名とそのフォルダ名として使用される'),
     'level-seed': _p(false, '', 'シングルプレイのように、ワールドのシード値を設定できる'),
-    'level-type': _p(false, 'DEFAULT', '生成されるマップのタイプを決定する'),
+    'level-type': _p(false, 'minecraft\\:normal', '生成されるマップのタイプを決定する'),
     'max-build-height': _p(false, '256', '建築が許可される最高高度'),
     'max-players': _p(false, '20', '同時にサーバー上でプレイできるプレイヤーの最大数'),
     'max-tick-time': _p(false, '60000', 'サーバーのウォッチドッグが、サーバーを停止させるまでにかかる単一ティックの最大ミリ秒'),
