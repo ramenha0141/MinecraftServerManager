@@ -10,7 +10,7 @@ const parse = (text: string): {[key: string]: string} => {
     return map;
 };
 const stringify = (map: {[key: string]: string}): string => {
-    return Object.entries(map).map(([key, value]) => `#It is managed by MinecraftServerManager.\n#Please do not edit.${key}=${value}`).join('\n');
+    return '#It is managed by MinecraftServerManager.\n#Please do not edit.\n' + Object.entries(map).map(([key, value]) => `${key}=${value}`).join('\n');
 };
 export default {
     parse,

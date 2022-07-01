@@ -54,7 +54,6 @@ const App = () => {
     const handleTabChange = (_: SyntheticEvent, newTabIndex: number) => {
         setTabIndex(newTabIndex);
     };
-    ServerAPI.getConfig().then((config) => console.log(config));
     return (
         <Box sx={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', userSelect: 'none' }}>
             <AppBar position='static'>
