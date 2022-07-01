@@ -1,12 +1,15 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { Writable } from 'stream';
+import { ServerAPI } from './@types/global';
 
-contextBridge.exposeInMainWorld('ServerAPI', {
+const api: ServerAPI = {
     isInstalled: (): Promise<boolean> => {
         return ipcRenderer.invoke('isInstalled');
     },
-    install: (): Promise<Writable> => {
+    install: (): Promise<boolean> => {
         return ipcRenderer.invoke('install');
+    },
+    agreeEULA: (): Promise<boolean> => {
+        return ipcRenderer.invoke('agreeEULA');
     },
     start: (): Promise<boolean> => {
         return ipcRenderer.invoke('start');
@@ -26,4 +29,5 @@ contextBridge.exposeInMainWorld('ServerAPI', {
     setConfig: (config: Config) => {
         ipcRenderer.send('setConfig', config);
     }
-});
+};
+contextBridge.exposeInMainWorld('ServerAPI', api);

@@ -53,6 +53,15 @@ const createWindow = () => {
             return false;
         }
     });
+    ipcMain.handle('agreeEULA', async () => {
+        try {
+            fs.writeFileSync(path.join(ServerPath, 'eula.txt'), 'eula=true\n');
+            return true;
+        } catch (e) {
+            console.log(e);
+            return false;
+        }
+    });
     ipcMain.handle('start', () => {
         console.log('start');
         return true;

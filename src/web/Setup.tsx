@@ -14,13 +14,18 @@ const Setup = () => {
     const handleInstall = async () => {
         setIsProcessing(true);
         const isInstallSuccess = await ServerAPI.install();
-            setIsProcessing(false);
+        setIsProcessing(false);
         if (isInstallSuccess) {
             setCurrentStep(1);
         }
     };
     const handleAgree = async () => {
-        setCurrentStep(2);
+        setIsProcessing(true);
+        const isAgreeSuccess = await ServerAPI.agreeEULA();
+        setIsProcessing(false);
+        if (isAgreeSuccess) {
+            setCurrentStep(2);
+        }
     };
     const handleFinish = async () => {
         setCurrentStep(3);
