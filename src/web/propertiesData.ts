@@ -1,7 +1,7 @@
-const _p = (isBool: boolean, defaultValue: string | boolean, details: string) => ({
+const _p = (isBool: boolean, defaultValue: string | boolean, detail: string) => ({
     isBool,
     defaultValue,
-    details
+    detail
 });
 
 const propertiesData = {

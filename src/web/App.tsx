@@ -18,12 +18,13 @@ import { isInstalledState, isServerRunningState } from './globalState';
 import Setup from './Setup';
 import { SyntheticEvent, useState } from 'react';
 import { Tab, Tabs } from '@mui/material';
+import Config from './Config';
 
 const ServerAPI = window.ServerAPI;
 
 const TabPanel = (props: { children?: any, index: number, value: number, }) => {
     return (
-        <Box sx={{ width: '100%', height: '100%' }}>
+        <Box sx={{ flexGrow: 1, py: 2 }}>
             {props.value === props.index && props.children}
         </Box>
     );
@@ -55,7 +56,7 @@ const App = () => {
     };
     ServerAPI.getConfig().then((config) => console.log(config));
     return (
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', userSelect: 'none' }}>
             <AppBar position="static">
                 <Toolbar>
                     <IconButton
@@ -84,13 +85,13 @@ const App = () => {
                     </ButtonGroup>
                 </Toolbar>
             </AppBar>
-            <Box sx={{ mx: 6, flexGrow: 1 }}>
+            <Box sx={{ mx: 6, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
                         <Tab label='Config' />
                     </Tabs>
                 </Box>
-                <TabPanel value={tabIndex} index={0}>1</TabPanel>
+                <TabPanel value={tabIndex} index={0}><Config /></TabPanel>
             </Box>
             <Dialog
                 fullScreen
