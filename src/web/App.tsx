@@ -24,7 +24,7 @@ const ServerAPI = window.ServerAPI;
 
 const TabPanel = (props: { children?: any, index: number, value: number, }) => {
     return (
-        <Box sx={{ flexGrow: 1, py: 2 }}>
+        <Box sx={{ py: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
             {props.value === props.index && props.children}
         </Box>
     );
@@ -56,7 +56,7 @@ const App = () => {
     };
     ServerAPI.getConfig().then((config) => console.log(config));
     return (
-        <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', userSelect: 'none' }}>
+        <Box sx={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', userSelect: 'none' }}>
             <AppBar position='static'>
                 <Toolbar>
                     <IconButton
@@ -85,8 +85,8 @@ const App = () => {
                     </ButtonGroup>
                 </Toolbar>
             </AppBar>
-            <Box sx={{ mx: 6, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Box sx={{ mx: 6, mb: 4, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ flexShrink: 0, borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
                         <Tab label='Config' />
                     </Tabs>
