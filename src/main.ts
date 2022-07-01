@@ -21,6 +21,7 @@ if (isDev) {
 
 const ServerPath = './.minecraft';
 const jarPath = path.join(ServerPath, 'server.jar');
+const eulaPath = path.join(ServerPath, 'eula.txt');
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
@@ -29,8 +30,8 @@ const createWindow = () => {
             webviewTag: true
         },
     });
-    ipcMain.handle('isInstalled', () => {
-        return false;
+    ipcMain.handle('isInstalled', async () => {
+        return fs.existsSync(eulaPath) && fs.readFileSync(eulaPath).toString() === 'eula=true\n';
     });
     ipcMain.handle('install', async () => {
         try {
@@ -55,7 +56,7 @@ const createWindow = () => {
     });
     ipcMain.handle('agreeEULA', async () => {
         try {
-            fs.writeFileSync(path.join(ServerPath, 'eula.txt'), 'eula=true\n');
+            fs.writeFileSync(eulaPath, 'eula=true\n');
             return true;
         } catch (e) {
             console.log(e);
