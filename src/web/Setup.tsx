@@ -1,4 +1,4 @@
-import { Backdrop, Box, Button, CircularProgress, Step, StepLabel, Stepper } from '@mui/material';
+import { Backdrop, Box, Button, CircularProgress, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 
@@ -49,11 +49,22 @@ const Setup = () => {
                 {
                     currentStep === 0
                         ? (
-                            <Button
-                                variant='contained'
-                                size='large'
-                                onClick={handleInstall}
-                            >Install</Button>
+                            <>
+                                <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                                    Welcome to MinecraftServerManager!!
+                                </Typography>
+                                <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+                                    Minecraft Server needs to be installed.
+                                    <br></br>
+                                    Click "INSTALL" to start the installation.
+                                </Typography>
+                                <Button
+                                    variant='contained'
+                                    size='large'
+                                    onClick={handleInstall}
+                                    sx={{ my: 10 }}
+                                >Install</Button>
+                            </>
                         ) : currentStep === 1
                             ? (
                                 <>
