@@ -23,10 +23,10 @@ const api: ServerAPI = {
     showLogWindow: () => {
         ipcRenderer.send('showLogWindow');
     },
-    getConfig: (): Promise<Config> => {
+    getConfig: (): Promise<{[key: string]: string}> => {
         return ipcRenderer.invoke('getConfig');
     },
-    setConfig: (config: Config) => {
+    setConfig: (config: {[key: string]: string}) => {
         ipcRenderer.send('setConfig', config);
     }
 };

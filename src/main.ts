@@ -5,6 +5,7 @@ import child_process from 'child_process';
 import { searchDevtools } from 'electron-search-devtools';
 import { BrowserWindow, app, session, ipcMain } from 'electron';
 import { Readable } from 'stream';
+import properties from './properties';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -22,6 +23,7 @@ if (isDev) {
 const ServerPath = './.minecraft';
 const jarPath = path.join(ServerPath, 'server.jar');
 const eulaPath = path.join(ServerPath, 'eula.txt');
+const propertiesPath = path.join(ServerPath, 'server.properties');
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
@@ -78,10 +80,10 @@ const createWindow = () => {
 
     });
     ipcMain.handle('getConfig', () => {
-        return {};
+        return properties.parse(fs.readFileSync(propertiesPath, 'utf-8'));
     });
-    ipcMain.on('setConfig', (_, config: Config) => {
-
+    ipcMain.on('setConfig', (_, config: {[key: string]: string}) => {
+        fs.writeFileSync(propertiesPath, properties.stringify(config));
     });
     mainWindow.setMenuBarVisibility(false);
 

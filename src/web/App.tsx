@@ -40,6 +40,7 @@ const App = () => {
         }
         setIsProcessing(false);
     };
+    ServerAPI.getConfig().then((config) => console.log(config));
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">

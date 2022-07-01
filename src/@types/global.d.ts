@@ -6,8 +6,8 @@ export interface ServerAPI {
     stop: () => Promise<boolean>,
     showPerformanceWindow: () => void,
     showLogWindow: () => void,
-    getConfig: () => Promise<Config>,
-    setConfig: (config: Config) => void
+    getConfig: () => Promise<{[key: string]: string}>,
+    setConfig: (config: {[key: string]: string}) => void
 }
 
 declare global {
