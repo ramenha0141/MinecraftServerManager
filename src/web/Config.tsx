@@ -75,9 +75,10 @@ const Config = () => {
                                         <TableCell align='right'>
                                             <TextField
                                                 variant='standard'
+                                                multiline
                                                 value={value}
                                                 onChange={handleChange}
-                                                sx={{ color: 'darkblue' }}
+                                                sx={{ textarea: { color: 'darkblue', textAlign: 'center' } }}
                                                 disabled={name === 'level-name'}
                                             />
                                         </TableCell>
