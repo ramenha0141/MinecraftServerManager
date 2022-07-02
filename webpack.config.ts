@@ -1,6 +1,7 @@
 import { Configuration } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import path from 'path';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -12,6 +13,9 @@ const common: Configuration = {
     externals: ['fsevents'],
     output: {
         publicPath: './',
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].js',
+        assetModuleFilename: 'assets/[name][ext]'
     },
     module: {
         rules: [
@@ -22,7 +26,15 @@ const common: Configuration = {
             },
             {
                 test: /\.css$/,
-                use: [MiniCssExtractPlugin.loader, 'css-loader'],
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: isDev,
+                        },
+                    }
+                ],
             },
             {
                 test: /\.(ico|png|jpe?g|svg|eot|woff?2?)$/,
