@@ -13,7 +13,7 @@ const common: Configuration = {
     externals: ['fsevents'],
     output: {
         publicPath: './',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, isDev ? 'dist' : 'build'),
         filename: '[name].js',
         assetModuleFilename: 'assets/[name][ext]'
     },

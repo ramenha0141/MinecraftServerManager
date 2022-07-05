@@ -7,3 +7,4 @@ yarn-*.log
 .env
 .DS_Store
 .minecraft
+out/
