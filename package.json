@@ -1,7 +1,8 @@
 {
   "name": "minecraft-server-manager",
   "productName": "MinecraftServerManager",
-  "description": "",
+  "description": "Manager for Minecraft Server",
+  "author": "Ra-men_ha_0141",
   "version": "1.0.0",
   "license": "MIT",
   "main": "dist/main.js",
