@@ -8,6 +8,8 @@ import properties from './properties';
 
 const isDev = process.env.NODE_ENV === 'development';
 
+if (require('electron-squirrel-startup')) app.quit();
+
 if (isDev) {
     require('electron-reload')(__dirname, {
         electron: path.resolve(
