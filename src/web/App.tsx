@@ -84,14 +84,16 @@ const App = () => {
                     </ButtonGroup>
                 </Toolbar>
             </AppBar>
-            <Box sx={{ mx: 6, mb: 4, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ flexShrink: 0, borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs value={tabIndex} onChange={handleTabChange}>
-                        <Tab label='Config' />
-                    </Tabs>
+            {
+                isInstalled && <Box sx={{ mx: 6, mb: 4, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Box sx={{ flexShrink: 0, borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs value={tabIndex} onChange={handleTabChange}>
+                            <Tab label='Config' />
+                        </Tabs>
+                    </Box>
+                    <TabPanel value={tabIndex} index={0}><Config /></TabPanel>
                 </Box>
-                <TabPanel value={tabIndex} index={0}><Config /></TabPanel>
-            </Box>
+            }
             <Dialog
                 fullScreen
                 open={!isInstalled}

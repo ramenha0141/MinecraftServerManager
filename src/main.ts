@@ -2,7 +2,6 @@ import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
 import child_process from 'child_process';
-import { searchDevtools } from 'electron-search-devtools';
 import { BrowserWindow, app, session, ipcMain } from 'electron';
 import { Readable } from 'stream';
 import properties from './properties';
@@ -88,13 +87,13 @@ const createWindow = () => {
     mainWindow.setMenuBarVisibility(false);
 
     if (isDev) {
-        searchDevtools('REACT')
-            .then((devtools) => {
+        require('electron-search-devtools').searchDevtools('REACT')
+            .then((devtools: string) => {
                 session.defaultSession.loadExtension(devtools, {
                     allowFileAccess: true,
                 });
             })
-            .catch((err) => console.log(err));
+            .catch((err: Error) => console.log(err));
 
         mainWindow.webContents.openDevTools({ mode: 'detach' });
     }
