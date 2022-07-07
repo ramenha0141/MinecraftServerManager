@@ -5,6 +5,7 @@ import child_process from 'child_process';
 import { BrowserWindow, app, session, ipcMain } from 'electron';
 import { Readable } from 'stream';
 import properties from './properties';
+import ServerController from './ServerController';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -28,6 +29,7 @@ const propertiesPath = path.join(ServerPath, 'server.properties');
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
+        show: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             webviewTag: true
@@ -66,13 +68,12 @@ const createWindow = () => {
             return false;
         }
     });
-    ipcMain.handle('start', () => {
-        console.log('start');
-        return true;
+    const serverCOntroller = new ServerController(ServerPath);
+    ipcMain.handle('start', async () => {
+        return await serverCOntroller.start();
     });
-    ipcMain.handle('stop', () => {
-        console.log('stop');
-        return true;
+    ipcMain.handle('stop', async () => {
+        return await serverCOntroller.stop();
     });
     ipcMain.on('showPerformanceWindow', () => {
 
@@ -86,21 +87,18 @@ const createWindow = () => {
     ipcMain.on('setConfig', (_, config: {[key: string]: string}) => {
         fs.writeFileSync(propertiesPath, properties.stringify(config));
     });
-    mainWindow.setMenuBarVisibility(false);
-
+    mainWindow.removeMenu();
+    mainWindow.loadFile('dist/index.html');
+    mainWindow.on('ready-to-show', () => mainWindow.show());
     if (isDev) {
         require('electron-search-devtools').searchDevtools('REACT')
             .then((devtools: string) => {
                 session.defaultSession.loadExtension(devtools, {
                     allowFileAccess: true,
                 });
-            })
-            .catch((err: Error) => console.log(err));
-
+            }).catch((err: Error) => console.log(err));
         mainWindow.webContents.openDevTools({ mode: 'detach' });
     }
-
-    mainWindow.loadFile('dist/index.html');
 };
 
 app.whenReady().then(createWindow);

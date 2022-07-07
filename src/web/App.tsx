@@ -19,6 +19,7 @@ import Setup from './Setup';
 import { SyntheticEvent, useState } from 'react';
 import { Tab, Tabs } from '@mui/material';
 import Config from './Config';
+import Control from './Control';
 
 const ServerAPI = window.ServerAPI;
 
@@ -32,25 +33,7 @@ const TabPanel = (props: { children?: any, index: number, value: number, }) => {
 
 const App = () => {
     const isInstalled = useRecoilValue(isInstalledState);
-    const [isServerRunning, setIsServerRunning] = useRecoilState(isServerRunningState);
-    const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [tabIndex, setTabIndex] = useState<number>(0);
-    const handleStart = async () => {
-        if (isServerRunning) return;
-        setIsProcessing(true);
-        if (await ServerAPI.start()) {
-            setIsServerRunning(true);
-        }
-        setIsProcessing(false);
-    };
-    const handleStop = async () => {
-        if (!isServerRunning) return;
-        setIsProcessing(true);
-        if (await ServerAPI.stop()) {
-            setIsServerRunning(false);
-        }
-        setIsProcessing(false);
-    };
     const handleTabChange = (_: SyntheticEvent, newTabIndex: number) => {
         setTabIndex(newTabIndex);
     };
@@ -70,18 +53,7 @@ const App = () => {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Minecraft Server Manager
                     </Typography>
-                    <ButtonGroup variant='contained' sx={{ mr: 10, backgroundColor: '#fff' }}>
-                        <Button variant='outlined'
-                            disabled={isServerRunning || isProcessing}
-                            onClick={handleStart}
-                        ><PlayArrowIcon /></Button>
-                        <Button variant='outlined'
-                            disabled={!isServerRunning || isProcessing}
-                            onClick={handleStop}
-                        ><StopIcon /></Button>
-                        <Button variant='outlined'><SpeedIcon /></Button>
-                        <Button variant='outlined'><TerminalIcon /></Button>
-                    </ButtonGroup>
+                    <Control />
                 </Toolbar>
             </AppBar>
             {
