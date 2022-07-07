@@ -60,20 +60,7 @@
       "packagerConfig": {},
       "makers": [
         {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "minecraft_server_manager"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-dmg",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
+          "name": "@electron-forge/maker-zip"
         }
       ]
     }
