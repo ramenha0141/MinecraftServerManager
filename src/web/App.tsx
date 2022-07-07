@@ -60,7 +60,7 @@ const App = () => {
                 isInstalled && <Box sx={{ mx: 6, mb: 4, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ flexShrink: 0, borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={tabIndex} onChange={handleTabChange}>
-                            <Tab label='Config' />
+                            <Tab label='サーバー設定' />
                         </Tabs>
                     </Box>
                     <TabPanel value={tabIndex} index={0}><Config /></TabPanel>
@@ -80,7 +80,7 @@ const App = () => {
                             <KeyboardArrowRightIcon />
                         </IconButton>
                         <Typography variant="h6" component="div">
-                            Setup
+                            セットアップ
                         </Typography>
                     </Toolbar>
                 </AppBar>

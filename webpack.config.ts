@@ -22,7 +22,7 @@ const common: Configuration = {
             {
                 test: /\.tsx?$/,
                 exclude: /node_modules/,
-                loader: 'ts-loader',
+                loader: 'ts-loader'
             },
             {
                 test: /\.css$/,
@@ -31,49 +31,49 @@ const common: Configuration = {
                     {
                         loader: 'css-loader',
                         options: {
-                            sourceMap: isDev,
-                        },
+                            sourceMap: isDev
+                        }
                     }
-                ],
+                ]
             },
             {
                 test: /\.(ico|png|jpe?g|svg|eot|woff?2?)$/,
-                type: 'asset/resource',
-            },
-        ],
+                type: 'asset/resource'
+            }
+        ]
     },
     watch: isDev,
-    devtool: isDev ? 'inline-source-map' : undefined,
+    devtool: isDev ? 'inline-source-map' : undefined
 };
 
 const main: Configuration = {
     ...common,
     target: 'electron-main',
     entry: {
-        main: './src/main.ts',
-    },
+        main: './src/main.ts'
+    }
 };
 
 const preload: Configuration = {
     ...common,
     target: 'electron-preload',
     entry: {
-        preload: './src/preload.ts',
-    },
+        preload: './src/preload.ts'
+    }
 };
 
 const renderer: Configuration = {
     ...common,
     target: 'web',
     entry: {
-        app: './src/web/index.tsx',
+        app: './src/web/index.tsx'
     },
     plugins: [
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
-            template: './src/web/index.html',
-        }),
-    ],
+            template: './src/web/index.html'
+        })
+    ]
 };
 
 const config = isDev ? renderer : [main, preload, renderer];

@@ -58,11 +58,11 @@ const Control = () => {
                 ><StopIcon /></Button>
                 <Button
                     variant='outlined'
-                    disabled={!isServerRunning}
+                    disabled={!isServerRunning || isProcessing}
                 ><SpeedIcon /></Button>
                 <Button
                     variant='outlined'
-                    disabled={!isServerRunning}
+                    disabled={!isServerRunning || isProcessing}
                 ><TerminalIcon /></Button>
             </ButtonGroup>
             <Snackbar open={isShowAlert} autoHideDuration={5000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} onClose={handleAlertClose}>

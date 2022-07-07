@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
 import child_process from 'child_process';
-import { BrowserWindow, app, session, ipcMain } from 'electron';
+import { BrowserWindow, app, session, ipcMain, dialog } from 'electron';
 import { Readable } from 'stream';
 import properties from './properties';
 import ServerController from './ServerController';
@@ -68,17 +68,17 @@ const createWindow = () => {
             return false;
         }
     });
-    const serverCOntroller = new ServerController(ServerPath);
+    const serverController = new ServerController(ServerPath);
     ipcMain.handle('start', async () => {
-        return await serverCOntroller.start();
+        return await serverController.start();
     });
     ipcMain.handle('stop', async () => {
-        return await serverCOntroller.stop();
+        return await serverController.stop();
     });
-    ipcMain.on('showPerformanceWindow', () => {
+    ipcMain.on('togglePerformance', () => {
 
     });
-    ipcMain.on('showLogWindow', () => {
+    ipcMain.on('toggleConsole', () => {
 
     });
     ipcMain.handle('getConfig', () => {
@@ -90,6 +90,19 @@ const createWindow = () => {
     mainWindow.removeMenu();
     mainWindow.loadFile('dist/index.html');
     mainWindow.on('ready-to-show', () => mainWindow.show());
+    mainWindow.on('close', async (event) => {
+        if (!serverController.isRunning) return;
+        const choice = await dialog.showMessageBox(mainWindow, {
+            type: 'question',
+            message: 'アプリケーションを終了する前にサーバーを終了してください',
+            buttons: ['終了', 'キャンセル'],
+        });
+        if (choice.response === 0) {
+            serverController.stop();
+        } else {
+            event.preventDefault();
+        }
+    });
     if (isDev) {
         require('electron-search-devtools').searchDevtools('REACT')
             .then((devtools: string) => {

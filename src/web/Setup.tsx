@@ -6,7 +6,7 @@ import { isInstalledState } from './globalState';
 
 const ServerAPI = window.ServerAPI;
 
-const steps = ['Install', 'EULA', 'Finish'];
+const steps = ['インストール', 'EULA', '完了'];
 const Setup = () => {
     const [currentStep, setCurrentStep] = useState<number>(0);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -51,19 +51,19 @@ const Setup = () => {
                         ? (
                             <>
                                 <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-                                    Welcome to MinecraftServerManager!!
+                                    MinecraftServerManager へようこそ！
                                 </Typography>
                                 <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                                    Minecraft Server needs to be installed.
+                                    Minecraft Server をインストールする必要があります。
                                     <br></br>
-                                    Click "INSTALL" to start the installation.
+                                    インストールを押してインストールを開始してください。
                                 </Typography>
                                 <Button
                                     variant='contained'
                                     size='large'
                                     onClick={handleInstall}
                                     sx={{ my: 10 }}
-                                >Install</Button>
+                                >インストール</Button>
                             </>
                         ) : currentStep === 1
                             ? (
@@ -76,7 +76,7 @@ const Setup = () => {
                                         variant='contained'
                                         sx={{ mt: 1 }}
                                         onClick={handleAgree}
-                                    >Agree</Button>
+                                    >同意</Button>
                                 </>
                             ) : (
                                 <>
@@ -84,7 +84,7 @@ const Setup = () => {
                                         variant='contained'
                                         size='large'
                                         onClick={handleFinish}
-                                    >Finish</Button>
+                                    >完了</Button>
                                 </>
                             )
                 }

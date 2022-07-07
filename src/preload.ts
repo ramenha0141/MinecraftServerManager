@@ -17,10 +17,10 @@ const api: ServerAPI = {
     stop: (): Promise<boolean> => {
         return ipcRenderer.invoke('stop');
     },
-    showPerformanceWindow: () => {
+    togglePerformance: () => {
         ipcRenderer.send('showPerformanceWindow');
     },
-    showLogWindow: () => {
+    toggleConsole: () => {
         ipcRenderer.send('showLogWindow');
     },
     getConfig: (): Promise<{[key: string]: string}> => {

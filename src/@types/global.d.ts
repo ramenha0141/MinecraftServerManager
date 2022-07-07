@@ -4,8 +4,8 @@ export interface ServerAPI {
     agreeEULA: () => Promise<boolean>,
     start: () => Promise<boolean>,
     stop: () => Promise<boolean>,
-    showPerformanceWindow: () => void,
-    showLogWindow: () => void,
+    togglePerformance: () => void,
+    toggleConsole: () => void,
     getConfig: () => Promise<{[key: string]: string}>,
     setConfig: (config: {[key: string]: string}) => void
 }

@@ -3,7 +3,7 @@ import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 class ServerController {
     constructor(ServerPath: string) {
         this.ServerPath = ServerPath;
-        process.on('exit', () => this.process?.stdin.write('stop\n'));
+        process.on('exit', () => this.process?.kill());
     }
     ServerPath: string;
     isRunning: boolean = false;

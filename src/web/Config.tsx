@@ -22,10 +22,10 @@ const Config = () => {
             <Table stickyHeader>
                 <TableHead>
                     <TableRow>
-                        <TableCell>name</TableCell>
-                        <TableCell align='right'>value</TableCell>
-                        <TableCell align='right'>default</TableCell>
-                        <TableCell align='right'>detail</TableCell>
+                        <TableCell>名前</TableCell>
+                        <TableCell align='right'>値</TableCell>
+                        <TableCell align='right'>デフォルト値</TableCell>
+                        <TableCell align='right'>説明</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody sx={{ userSelect: 'text' }}>
