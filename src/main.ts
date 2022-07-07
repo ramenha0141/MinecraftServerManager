@@ -92,12 +92,12 @@ const createWindow = () => {
     mainWindow.on('ready-to-show', () => mainWindow.show());
     mainWindow.on('close', async (event) => {
         if (!serverController.isRunning) return;
-        const choice = await dialog.showMessageBox(mainWindow, {
+        const choice = dialog.showMessageBoxSync(mainWindow, {
             type: 'question',
             message: 'アプリケーションを終了する前にサーバーを終了してください',
             buttons: ['終了', 'キャンセル'],
         });
-        if (choice.response === 0) {
+        if (choice === 0) {
             serverController.stop();
         } else {
             event.preventDefault();

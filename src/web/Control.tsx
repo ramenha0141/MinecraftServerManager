@@ -1,8 +1,6 @@
 import { Alert, Button, ButtonGroup, Snackbar } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
-import SpeedIcon from '@mui/icons-material/Speed';
-import TerminalIcon from '@mui/icons-material/Terminal';
 import { useRecoilState } from 'recoil';
 import { isServerRunningState } from './globalState';
 import { useState } from 'react';
@@ -56,23 +54,15 @@ const Control = () => {
                     disabled={!isServerRunning || isProcessing}
                     onClick={handleStop}
                 ><StopIcon /></Button>
-                <Button
-                    variant='outlined'
-                    disabled={!isServerRunning || isProcessing}
-                ><SpeedIcon /></Button>
-                <Button
-                    variant='outlined'
-                    disabled={!isServerRunning || isProcessing}
-                ><TerminalIcon /></Button>
             </ButtonGroup>
             <Snackbar open={isShowAlert} autoHideDuration={5000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} onClose={handleAlertClose}>
                 <Alert severity={alertType === 'startFailed' ? 'error' : 'success'} sx={{ width: '100%'}} onClose={handleAlertClose}>
                     {
                         alertType === 'startSuccess'
-                            ? 'Server started successfully'
+                            ? 'サーバーが正常に起動しました'
                             : alertType === 'startFailed'
-                            ? 'Failed to start the Server'
-                            : 'Server stopped successfully'
+                            ? 'サーバーの起動に失敗しました'
+                            : 'サーバーが正常に停止しました'
                     }
                 </Alert>
             </Snackbar>

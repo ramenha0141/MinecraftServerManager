@@ -3,20 +3,21 @@ import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 class ServerController {
     constructor(ServerPath: string) {
         this.ServerPath = ServerPath;
-        process.on('exit', () => this.process?.kill());
     }
     ServerPath: string;
     isRunning: boolean = false;
     process?: ChildProcessWithoutNullStreams;
     async start(): Promise<boolean> {
-        this.process = spawn('java', ['-jar', 'server.jar', '-nogui'], { cwd: this.ServerPath});
+        this.process = spawn('java', ['-jar', 'server.jar'], { cwd: this.ServerPath});
         this.process.stdout.pipe(process.stdout);
+        this.isRunning = true;
         return waitForStartup(this.process);
     }
     async stop(): Promise<boolean> {
         if (!this.process) return false;
         this.process.stdin.write('stop\n');
         await waitForStop(this.process);
+        this.isRunning = false;
         return true;
     }
 }
