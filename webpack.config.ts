@@ -21,7 +21,7 @@ const common: Configuration = {
         rules: [
             {
                 test: /\.tsx?$/,
-                exclude: /(node_modules|out)/,
+                include: path.join(__dirname, 'src'),
                 loader: 'ts-loader'
             },
             {
@@ -43,7 +43,30 @@ const common: Configuration = {
         ]
     },
     watch: isDev,
-    devtool: isDev ? 'inline-source-map' : undefined
+    devtool: isDev ? 'inline-source-map' : undefined,
+    optimization: {
+        splitChunks: {
+            chunks: 'async',
+            minSize: 20000,
+            minRemainingSize: 0,
+            minChunks: 1,
+            maxAsyncRequests: 30,
+            maxInitialRequests: 30,
+            enforceSizeThreshold: 50000,
+            cacheGroups: {
+                defaultVendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: -10,
+                    reuseExistingChunk: true
+                },
+                default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true
+                }
+            }
+        }
+    }
 };
 
 const main: Configuration = {

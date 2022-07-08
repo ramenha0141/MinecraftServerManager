@@ -58,7 +58,11 @@
   },
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "dir": "./dist",
+        "ignore": [".minecraft", ".vscode", "node_modules", "src", ".gitignore", "package-lock.json", "tsconfig.json", "tsconfig.main.json", "webpack.config.ts"],
+        "asar": true
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-zip"

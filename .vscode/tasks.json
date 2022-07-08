@@ -6,10 +6,17 @@
 			"script": "dev",
 			"problemMatcher": [],
 			"label": "npm: dev",
-			"detail": "run-p dev:*",
+			"detail": "Run electron app",
 			"runOptions": {
 				"runOn": "folderOpen"
 			}
+		},
+		{
+			"type": "npm",
+			"script": "build",
+			"problemMatcher": [],
+			"label": "npm: build",
+			"detail": "Build electron app"
 		}
 	]
 }
