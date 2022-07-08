@@ -8,8 +8,9 @@ class ServerController {
     isRunning: boolean = false;
     process?: ChildProcessWithoutNullStreams;
     async start(): Promise<boolean> {
-        this.process = spawn('java', ['-jar', 'server.jar'], { cwd: this.ServerPath});
+        this.process = spawn('java', ['-jar', 'server.jar', '-nogui'], { cwd: this.ServerPath});
         this.process.stdout.pipe(process.stdout);
+        this.process.stdout.on('data', (data: Buffer) => consoleWindow?.webContents.send('data', data.toString()));
         this.isRunning = true;
         return waitForStartup(this.process);
     }

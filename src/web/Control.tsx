@@ -1,6 +1,7 @@
 import { Alert, Button, ButtonGroup, Snackbar } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
+import TerminalIcon from '@mui/icons-material/Terminal';
 import { useRecoilState } from 'recoil';
 import { isServerRunningState } from './globalState';
 import { useState } from 'react';
@@ -34,6 +35,9 @@ const Control = () => {
         }
         setIsProcessing(false);
     };
+    const handleShowConsole = () => {
+        ServerAPI.showConsole();
+    };
     const showAlert = (type: alertType) => {
         setAlertType(type);
         setIsShowAlert(true);
@@ -54,6 +58,11 @@ const Control = () => {
                     disabled={!isServerRunning || isProcessing}
                     onClick={handleStop}
                 ><StopIcon /></Button>
+                <Button
+                    variant='outlined'
+                    disabled={!isServerRunning || isProcessing}
+                    onClick={handleShowConsole}
+                ><TerminalIcon /></Button>
             </ButtonGroup>
             <Snackbar open={isShowAlert} autoHideDuration={5000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} onClose={handleAlertClose}>
                 <Alert severity={alertType === 'startFailed' ? 'error' : 'success'} sx={{ width: '100%'}} onClose={handleAlertClose}>

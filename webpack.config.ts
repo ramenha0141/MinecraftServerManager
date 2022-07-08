@@ -58,7 +58,8 @@ const preload: Configuration = {
     ...common,
     target: 'electron-preload',
     entry: {
-        preload: './src/preload.ts'
+        preload: './src/preload.ts',
+        'preload-console': './src/preload-console.ts'
     }
 };
 
@@ -76,5 +77,20 @@ const renderer: Configuration = {
     ]
 };
 
-const config = isDev ? renderer : [main, preload, renderer];
+const console: Configuration = {
+    ...common,
+    target: 'web',
+    entry: {
+        console: './src/console/index.ts'
+    },
+    plugins: [
+        new MiniCssExtractPlugin(),
+        new HtmlWebpackPlugin({
+            template: './src/console/console.html',
+            filename: 'console.html'
+        })
+    ]
+};
+
+const config = isDev ? [renderer, console] : [main, preload, renderer, console];
 export default config;

@@ -6,10 +6,9 @@ import { BrowserWindow, app, session, ipcMain, dialog } from 'electron';
 import { Readable } from 'stream';
 import properties from './properties';
 import ServerController from './ServerController';
+import windowStateKeeper from 'electron-window-state';
 
 const isDev = process.env.NODE_ENV === 'development';
-
-if (require('electron-squirrel-startup')) app.quit();
 
 if (isDev) {
     require('electron-reload')(__dirname, {
@@ -28,8 +27,16 @@ const eulaPath = path.join(ServerPath, 'eula.txt');
 const propertiesPath = path.join(ServerPath, 'server.properties');
 
 const createWindow = () => {
+    const mainWindowState = windowStateKeeper({
+        defaultWidth: 1000,
+        defaultHeight: 800
+    });
     const mainWindow = new BrowserWindow({
         show: false,
+        width: mainWindowState.width,
+        height: mainWindowState.height,
+        x: mainWindowState.x,
+        y: mainWindowState.y,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             webviewTag: true
@@ -42,7 +49,7 @@ const createWindow = () => {
         try {
             if (fs.existsSync(ServerPath)) fs.rmdirSync(ServerPath, { recursive: true });
             fs.mkdirSync(ServerPath);
-            const  { data } = await axios.get<Readable>(
+            const { data } = await axios.get<Readable>(
                 'https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar',
                 { responseType: 'stream' }
             );
@@ -78,13 +85,13 @@ const createWindow = () => {
     ipcMain.on('togglePerformance', () => {
 
     });
-    ipcMain.on('toggleConsole', () => {
-
+    ipcMain.on('showConsole', () => {
+        showConsole();
     });
     ipcMain.handle('getConfig', () => {
         return properties.parse(fs.readFileSync(propertiesPath, 'utf-8'));
     });
-    ipcMain.on('setConfig', (_, config: {[key: string]: string}) => {
+    ipcMain.on('setConfig', (_, config: { [key: string]: string }) => {
         fs.writeFileSync(propertiesPath, properties.stringify(config));
     });
     mainWindow.removeMenu();
@@ -103,6 +110,10 @@ const createWindow = () => {
             event.preventDefault();
         }
     });
+    mainWindow.on('closed', () => {
+        if (consoleWindow) consoleWindow.close();
+    });
+    mainWindowState.manage(mainWindow);
     if (isDev) {
         require('electron-search-devtools').searchDevtools('REACT')
             .then((devtools: string) => {
@@ -112,6 +123,32 @@ const createWindow = () => {
             }).catch((err: Error) => console.log(err));
         mainWindow.webContents.openDevTools({ mode: 'detach' });
     }
+
+    global.consoleWindow = undefined;
+    const consoleWindowState = windowStateKeeper({
+        defaultWidth: 600,
+        defaultHeight: 400
+    });
+    const showConsole = () => {
+        if (!consoleWindow) {
+            consoleWindow = new BrowserWindow({
+                show: false,
+                width: consoleWindowState.width,
+                height: consoleWindowState.height,
+                x: consoleWindowState.x,
+                y: consoleWindowState.y,
+                webPreferences: {
+                    preload: path.join(__dirname, 'preload-console.js')
+                }
+            });
+            consoleWindow.removeMenu();
+            consoleWindow.loadFile('dist/console.html');
+            consoleWindow.on('ready-to-show', () => consoleWindow?.show());
+            consoleWindow.on('close', () => consoleWindow = undefined);
+            consoleWindowState.manage(consoleWindow);
+        }
+        consoleWindow.focus();
+    };
 };
 
 app.whenReady().then(createWindow);
