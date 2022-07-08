@@ -63,6 +63,7 @@ const createWindow = () => {
             });
         } catch (e) {
             console.log(e);
+            dialog.showErrorBox('Install Error', (e as Error).toString());
             return false;
         }
     });
