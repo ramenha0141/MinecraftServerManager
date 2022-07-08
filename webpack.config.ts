@@ -21,7 +21,7 @@ const common: Configuration = {
         rules: [
             {
                 test: /\.tsx?$/,
-                exclude: /node_modules/,
+                exclude: /(node_modules|out)/,
                 loader: 'ts-loader'
             },
             {
