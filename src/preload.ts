@@ -1,12 +1,12 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { ServerAPI } from './@types/global';
+import { ServerAPI, versions } from './@types/global';
 
 const api: ServerAPI = {
     isInstalled: (): Promise<boolean> => {
         return ipcRenderer.invoke('isInstalled');
     },
-    install: (): Promise<boolean> => {
-        return ipcRenderer.invoke('install');
+    install: (version: versions): Promise<boolean> => {
+        return ipcRenderer.invoke('install', version);
     },
     agreeEULA: (): Promise<boolean> => {
         return ipcRenderer.invoke('agreeEULA');

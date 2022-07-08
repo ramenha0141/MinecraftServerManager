@@ -7,6 +7,7 @@ import { Readable } from 'stream';
 import properties from './properties';
 import ServerController from './ServerController';
 import windowStateKeeper from 'electron-window-state';
+import { versions } from './@types/global';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -25,6 +26,13 @@ const ServerPath = './.minecraft';
 const jarPath = path.join(ServerPath, 'server.jar');
 const eulaPath = path.join(ServerPath, 'eula.txt');
 const propertiesPath = path.join(ServerPath, 'server.properties');
+
+const ServerVersions: {[key: string]: string} = {
+    '1.19': 'https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar',
+    '1.18.2': 'https://launcher.mojang.com/v1/objects/c8f83c5655308435b3dcf03c06d9fe8740a77469/server.jar',
+    '1.16.5': 'https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar',
+    '1.12.2': 'https://launcher.mojang.com/v1/objects/886945bfb2b978778c3a0288fd7fab09d315b25f/server.jar'
+};
 
 const createWindow = () => {
     const mainWindowState = windowStateKeeper({
@@ -45,12 +53,12 @@ const createWindow = () => {
     ipcMain.handle('isInstalled', async () => {
         return fs.existsSync(eulaPath) && fs.readFileSync(eulaPath).toString() === 'eula=true\n';
     });
-    ipcMain.handle('install', async () => {
+    ipcMain.handle('install', async (_, version: versions) => {
         try {
             if (fs.existsSync(ServerPath)) fs.rmdirSync(ServerPath, { recursive: true });
             fs.mkdirSync(ServerPath);
             const { data } = await axios.get<Readable>(
-                'https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar',
+                ServerVersions[version],
                 { responseType: 'stream' }
             );
             data.pipe(fs.createWriteStream(jarPath));

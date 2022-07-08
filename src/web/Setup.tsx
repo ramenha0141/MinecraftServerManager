@@ -1,6 +1,7 @@
-import { Backdrop, Box, Button, CircularProgress, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import { Backdrop, Box, Button, CircularProgress, InputLabel, MenuItem, Select, SelectChangeEvent, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useSetRecoilState } from 'recoil';
+import { versions } from '../@types/global';
 
 import { isInstalledState } from './globalState';
 
@@ -11,9 +12,13 @@ const Setup = () => {
     const [currentStep, setCurrentStep] = useState<number>(0);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const setIsInstalled = useSetRecoilState(isInstalledState);
+    const [version, setVersion] = useState<versions>('1.19');
+    const handleVersionChange = (event: SelectChangeEvent) => {
+        setVersion(event.target.value as versions);
+    };
     const handleInstall = async () => {
         setIsProcessing(true);
-        const isInstallSuccess = await ServerAPI.install();
+        const isInstallSuccess = await ServerAPI.install(version);
         setIsProcessing(false);
         if (isInstallSuccess) {
             setCurrentStep(1);
@@ -56,8 +61,19 @@ const Setup = () => {
                                 <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                                     Minecraft Server をインストールする必要があります。
                                     <br></br>
-                                    インストールを押してインストールを開始してください。
+                                    バージョンを選択し、インストールを押してインストールを開始してください。
                                 </Typography>
+                                <InputLabel id='version-selector'>バージョン</InputLabel>
+                                <Select
+                                    labelId='version-selector'
+                                    value={version}
+                                    onChange={handleVersionChange}
+                                >
+                                    <MenuItem value='1.19'>1.19</MenuItem>
+                                    <MenuItem value='1.18.2'>1.18.2</MenuItem>
+                                    <MenuItem value='1.16.5'>1.16.5</MenuItem>
+                                    <MenuItem value='1.12.2'>1.12.2</MenuItem>
+                                </Select>
                                 <Button
                                     variant='contained'
                                     size='large'

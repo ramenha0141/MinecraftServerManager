@@ -60,7 +60,7 @@ const Control = () => {
                 ><StopIcon /></Button>
                 <Button
                     variant='outlined'
-                    disabled={!isServerRunning || isProcessing}
+                    disabled={!isServerRunning}
                     onClick={handleShowConsole}
                 ><TerminalIcon /></Button>
             </ButtonGroup>

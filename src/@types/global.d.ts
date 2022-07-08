@@ -2,7 +2,7 @@ import { BrowserWindow, IpcRendererEvent } from 'electron'
 
 export interface ServerAPI {
     isInstalled: () => Promise<boolean>,
-    install: () => Promise<boolean>,
+    install: (version: versions) => Promise<boolean>,
     agreeEULA: () => Promise<boolean>,
     start: () => Promise<boolean>,
     stop: () => Promise<boolean>,
@@ -23,3 +23,5 @@ declare global {
     }
     var consoleWindow: BrowserWindow | undefined;
 }
+
+type versions = '1.19' | '1.18.2' | '1.16.5' | '1.12.2';
