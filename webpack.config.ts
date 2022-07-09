@@ -86,16 +86,16 @@ const preload: Configuration = {
     }
 };
 
-const renderer: Configuration = {
+const app: Configuration = {
     ...common,
     target: 'web',
     entry: {
-        app: './src/web/index.tsx'
+        app: './src/app/index.tsx'
     },
     plugins: [
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
-            template: './src/web/index.html'
+            template: './src/app/index.html'
         })
     ]
 };
@@ -115,5 +115,5 @@ const console: Configuration = {
     ]
 };
 
-const config = isDev ? [renderer, console] : [main, preload, renderer, console];
+const config = isDev ? [app, console] : [main, preload, app, console];
 export default config;
