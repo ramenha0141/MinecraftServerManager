@@ -1,6 +1,7 @@
 import { Configuration } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 import path from 'path';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -46,26 +47,11 @@ const common: Configuration = {
     devtool: isDev ? 'inline-source-map' : undefined,
     optimization: {
         splitChunks: {
-            chunks: 'async',
-            minSize: 20000,
-            minRemainingSize: 0,
-            minChunks: 1,
-            maxAsyncRequests: 30,
-            maxInitialRequests: 30,
-            enforceSizeThreshold: 50000,
-            cacheGroups: {
-                defaultVendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10,
-                    reuseExistingChunk: true
-                },
-                default: {
-                    minChunks: 2,
-                    priority: -20,
-                    reuseExistingChunk: true
-                }
-            }
-        }
+            name: 'vendor',
+            chunks: 'all'
+        },
+        minimize: true,
+        minimizer: [new TerserPlugin()],
     }
 };
 
@@ -85,6 +71,20 @@ const preload: Configuration = {
         'preload-console': './src/preload-console.ts'
     }
 };
+
+const launcher: Configuration = {
+    ...common,
+    target: 'web',
+    entry: {
+        launcher: './src/launcher/index.tsx'
+    },
+    plugins: [
+        new MiniCssExtractPlugin(),
+        new HtmlWebpackPlugin({
+            template: './src/launcher/launcher.html'
+        })
+    ]
+}
 
 const app: Configuration = {
     ...common,
@@ -115,5 +115,5 @@ const console: Configuration = {
     ]
 };
 
-const config = isDev ? [app, console] : [main, preload, app, console];
+const config = isDev ? [launcher, app, console] : [main, preload, launcher, app, console];
 export default config;
