@@ -3,21 +3,22 @@ import fs from 'fs';
 import path from 'path';
 
 class ServerController {
-    constructor(ServerPath: string) {
+    constructor(ServerPath: string, logPath: string) {
         this.ServerPath = ServerPath;
+        this.logPath = logPath;
     }
     ServerPath: string;
+    logPath: string;
     isRunning: boolean = false;
     process?: ChildProcessWithoutNullStreams;
     async start(): Promise<boolean> {
         this.process = spawn('java', ['-jar', 'server.jar', '-nogui'], { cwd: this.ServerPath});
         this.process.stdout.pipe(process.stdout);
-        const logPath = path.join(this.ServerPath, 'server.log');
-        if (fs.existsSync(logPath)) fs.rmSync(logPath);
+        if (fs.existsSync(this.logPath)) fs.rmSync(this.logPath);
         this.process.stdout.on('data', (data: Buffer) => {
             const str = data.toString();
             consoleWindow?.webContents.send('data', str);
-            fs.appendFileSync(logPath, str, 'utf-8');
+            fs.appendFileSync(this.logPath, str, 'utf-8');
         });
         this.isRunning = true;
         return waitForStartup(this.process);
@@ -27,8 +28,7 @@ class ServerController {
         this.process.stdin.write('stop\n');
         await waitForStop(this.process);
         this.isRunning = false;
-        const logPath = path.join(this.ServerPath, 'server.log');
-        if (fs.existsSync(logPath)) fs.rmSync(logPath);
+        if (fs.existsSync(this.logPath)) fs.rmSync(this.logPath);
         return true;
     }
 }

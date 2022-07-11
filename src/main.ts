@@ -74,6 +74,7 @@ const createMainWindow = (profileId: string) => {
     const jarPath = path.join(ServerPath, 'server.jar');
     const eulaPath = path.join(ServerPath, 'eula.txt');
     const propertiesPath = path.join(ServerPath, 'server.properties');
+    const logPath = path.join(ServerPath, 'server.log');
 
     const mainWindowState = windowStateKeeper({
         defaultWidth: 1000,
@@ -156,7 +157,7 @@ const createMainWindow = (profileId: string) => {
             return false;
         }
     });
-    const serverController = new ServerController(ServerPath);
+    const serverController = new ServerController(ServerPath, logPath);
     ipcMain.handle('start', async () => {
         return await serverController.start();
     });
