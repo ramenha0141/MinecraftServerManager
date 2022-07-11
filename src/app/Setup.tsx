@@ -63,9 +63,8 @@ const Setup = () => {
                                     <br></br>
                                     バージョンを選択し、インストールを押してインストールを開始してください。
                                 </Typography>
-                                <InputLabel id='version-selector'>バージョン</InputLabel>
                                 <Select
-                                    labelId='version-selector'
+                                    label='バージョン'
                                     value={version}
                                     onChange={handleVersionChange}
                                 >

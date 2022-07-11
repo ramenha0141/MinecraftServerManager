@@ -8,6 +8,9 @@ const LauncherAPI: LauncherAPI = {
     setProfiles: (profiles: Profiles) => {
         ipcRenderer.send('setProfiles', profiles);
     },
+    showFolderSelector: () => {
+        return ipcRenderer.invoke('showFolderSelector');
+    },
     launch: (profileId: string) => {
         ipcRenderer.send('launch', profileId);
     }

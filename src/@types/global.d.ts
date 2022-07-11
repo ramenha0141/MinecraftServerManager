@@ -9,6 +9,7 @@ export type Profiles = {[key: string]: Profile};
 export interface LauncherAPI {
     getProfiles: () => Promise<Profiles>,
     setProfiles: (profiles: Profiles) => void,
+    showFolderSelector: () => Promise<string | undefined>,
     launch: (profileId: string) => void
 }
 

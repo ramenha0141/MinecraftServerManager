@@ -59,6 +59,10 @@ const createLauncherWindow = () => {
     ipcMain.on('setProfiles', (_, profiles: Profiles) => {
         setProfiles(profiles);
     });
+    ipcMain.handle('showFolderSelector', async () => {
+        const result = await dialog.showOpenDialog(launcherWindow, { properties: ['openDirectory'] });
+        return result.filePaths[0];
+    });
     ipcMain.on('launch', (_, profileId: string) => {
         createMainWindow(profileId);
         launcherWindow.close();

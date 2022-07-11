@@ -45,7 +45,7 @@ const common: Configuration = {
     },
     watch: isDev,
     devtool: isDev ? 'inline-source-map' : undefined,
-    optimization: {
+    optimization: isDev ? undefined : {
         minimize: true,
         minimizer: [new TerserPlugin()],
     }
