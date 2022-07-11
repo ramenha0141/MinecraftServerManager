@@ -7,7 +7,7 @@ import { Readable } from 'stream';
 import properties from './properties';
 import ServerController from './ServerController';
 import windowStateKeeper from 'electron-window-state';
-import { Profile, Profiles, versions } from './@types/global';
+import { Profiles, versions } from './@types/global';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -23,8 +23,8 @@ if (isDev) {
 }
 
 const appDataPath = path.join(app.getPath('appData'), 'MinecraftServerManager');
-console.log(appDataPath)
 const profilePath = path.join(appDataPath, 'profiles.json');
+const logPath = path.join(appDataPath, 'server.log');
 
 const ServerVersions: {[key: string]: string} = {
     '1.19': 'https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar',
@@ -36,7 +36,8 @@ const ServerVersions: {[key: string]: string} = {
 const createLauncherWindow = () => {
     const launcherWindowState = windowStateKeeper({
         defaultWidth: 500,
-        defaultHeight: 500
+        defaultHeight: 500,
+        file: 'launcher-window-state.json'
     });
     const launcherWindow = new BrowserWindow({
         show: false,
@@ -56,25 +57,25 @@ const createLauncherWindow = () => {
         return getProfiles();
     });
     ipcMain.on('setProfiles', (_, profiles: Profiles) => {
-        fs.writeFileSync(profilePath, JSON.stringify(profiles), 'utf-8');
+        setProfiles(profiles);
     });
     ipcMain.on('launch', (_, profileId: string) => {
-        const profiles = getProfiles();
-        const profile = profiles[profileId];
-        createMainWindow(profile);
+        createMainWindow(profileId);
         launcherWindow.close();
     });
 };
 
-const createMainWindow = (profile: Profile) => {
-    const ServerPath = profile.path;
+const createMainWindow = (profileId: string) => {
+    const profiles = getProfiles();
+    const ServerPath = profiles[profileId].path;
     const jarPath = path.join(ServerPath, 'server.jar');
     const eulaPath = path.join(ServerPath, 'eula.txt');
     const propertiesPath = path.join(ServerPath, 'server.properties');
 
     const mainWindowState = windowStateKeeper({
         defaultWidth: 1000,
-        defaultHeight: 800
+        defaultHeight: 800,
+        file: 'main-window-state.json'
     });
     const mainWindow = new BrowserWindow({
         show: false,
@@ -132,12 +133,14 @@ const createMainWindow = (profile: Profile) => {
                 data.on('error', () => resolve(false));
                 data.on('end', () => {
                     child_process.execSync(`cd ${ServerPath} && java -jar server.jar`);
+                    profiles[profileId].version = version;
+                    setProfiles(profiles);
                     resolve(true);
                 });
             });
         } catch (e) {
             console.log(e);
-            dialog.showErrorBox('Install Error', (e as Error).toString());
+            dialog.showErrorBox('インストールエラー', (e as Error).toString());
             return false;
         }
     });
@@ -150,7 +153,7 @@ const createMainWindow = (profile: Profile) => {
             return false;
         }
     });
-    const serverController = new ServerController(ServerPath);
+    const serverController = new ServerController(ServerPath, logPath);
     ipcMain.handle('start', async () => {
         return await serverController.start();
     });
@@ -173,7 +176,8 @@ const createMainWindow = (profile: Profile) => {
     global.consoleWindow = undefined;
     const consoleWindowState = windowStateKeeper({
         defaultWidth: 600,
-        defaultHeight: 400
+        defaultHeight: 400,
+        file: 'console-window-state.json'
     });
     const showConsole = () => {
         if (!consoleWindow) {
@@ -189,11 +193,16 @@ const createMainWindow = (profile: Profile) => {
             });
             consoleWindow.removeMenu();
             consoleWindow.loadFile(path.join(__dirname, 'console.html'));
-            consoleWindow.once('ready-to-show', () => consoleWindow?.show());
+            consoleWindow.once('ready-to-show', () => {
+                consoleWindow?.show();
+                consoleWindow?.focus();
+                if (fs.existsSync(logPath)) consoleWindow?.webContents.send('data', fs.readFileSync(logPath, 'utf-8'));
+            });
             consoleWindow.on('close', () => consoleWindow = undefined);
             consoleWindowState.manage(consoleWindow);
+        } else {
+            consoleWindow.focus();
         }
-        consoleWindow.focus();
     };
 };
 
@@ -203,6 +212,9 @@ const getProfiles = () => {
         return {};
     }
     return JSON.parse(fs.readFileSync(profilePath, 'utf-8')) as Profiles;
+};
+const setProfiles = (profiles: Profiles) => {
+    fs.writeFileSync(profilePath, JSON.stringify(profiles), 'utf-8');
 };
 
 app.whenReady().then(createLauncherWindow);
