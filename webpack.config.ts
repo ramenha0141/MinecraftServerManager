@@ -46,10 +46,6 @@ const common: Configuration = {
     watch: isDev,
     devtool: isDev ? 'inline-source-map' : undefined,
     optimization: {
-        splitChunks: {
-            name: 'vendor',
-            chunks: 'all'
-        },
         minimize: true,
         minimizer: [new TerserPlugin()],
     }
@@ -67,6 +63,7 @@ const preload: Configuration = {
     ...common,
     target: 'electron-preload',
     entry: {
+        'preload-launcher': './src/preload-launcher.ts',
         preload: './src/preload.ts',
         'preload-console': './src/preload-console.ts'
     }
@@ -81,10 +78,11 @@ const launcher: Configuration = {
     plugins: [
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
-            template: './src/launcher/launcher.html'
+            template: './src/launcher/index.html',
+            filename: 'launcher.html'
         })
     ]
-}
+};
 
 const app: Configuration = {
     ...common,
@@ -109,7 +107,7 @@ const console: Configuration = {
     plugins: [
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
-            template: './src/console/console.html',
+            template: './src/console/index.html',
             filename: 'console.html'
         })
     ]

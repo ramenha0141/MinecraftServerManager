@@ -1,5 +1,17 @@
 import { BrowserWindow, IpcRendererEvent } from 'electron'
 
+export interface Profile {
+    path: string,
+    version?: versions
+}
+export type Profiles = {[key: string]: Profile};
+
+export interface LauncherAPI {
+    getProfiles: () => Promise<Profiles>,
+    setProfiles: (profiles: Profiles) => void,
+    launch: (profileId: string) => void
+}
+
 export interface ServerAPI {
     isInstalled: () => Promise<boolean>,
     install: (version: versions) => Promise<boolean>,
@@ -18,6 +30,7 @@ export interface ConsoleAPI {
 
 declare global {
     interface Window {
+        LauncherAPI: LauncherAPI,
         ServerAPI: ServerAPI,
         ConsoleAPI: ConsoleAPI
     }

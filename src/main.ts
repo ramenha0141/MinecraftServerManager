@@ -7,7 +7,7 @@ import { Readable } from 'stream';
 import properties from './properties';
 import ServerController from './ServerController';
 import windowStateKeeper from 'electron-window-state';
-import { versions } from './@types/global';
+import { Profile, Profiles, versions } from './@types/global';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -22,10 +22,9 @@ if (isDev) {
     });
 }
 
-const ServerPath = './.minecraft';
-const jarPath = path.join(ServerPath, 'server.jar');
-const eulaPath = path.join(ServerPath, 'eula.txt');
-const propertiesPath = path.join(ServerPath, 'server.properties');
+const appDataPath = path.join(app.getPath('appData'), 'MinecraftServerManager');
+console.log(appDataPath)
+const profilePath = path.join(appDataPath, 'profiles.json');
 
 const ServerVersions: {[key: string]: string} = {
     '1.19': 'https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar',
@@ -34,7 +33,45 @@ const ServerVersions: {[key: string]: string} = {
     '1.12.2': 'https://launcher.mojang.com/v1/objects/886945bfb2b978778c3a0288fd7fab09d315b25f/server.jar'
 };
 
-const createWindow = () => {
+const createLauncherWindow = () => {
+    const launcherWindowState = windowStateKeeper({
+        defaultWidth: 500,
+        defaultHeight: 500
+    });
+    const launcherWindow = new BrowserWindow({
+        show: false,
+        width: launcherWindowState.width,
+        height: launcherWindowState.height,
+        x: launcherWindowState.x,
+        y: launcherWindowState.y,
+        webPreferences: {
+            preload: path.join(__dirname, 'preload-launcher.js')
+        }
+    });
+    launcherWindow.removeMenu();
+    launcherWindow.loadFile(path.join(__dirname, 'launcher.html'));
+    launcherWindow.once('ready-to-show', () => launcherWindow.show());
+    launcherWindowState.manage(launcherWindow);
+    ipcMain.handle('getProfiles', () => {
+        return getProfiles();
+    });
+    ipcMain.on('setProfiles', (_, profiles: Profiles) => {
+        fs.writeFileSync(profilePath, JSON.stringify(profiles), 'utf-8');
+    });
+    ipcMain.on('launch', (_, profileId: string) => {
+        const profiles = getProfiles();
+        const profile = profiles[profileId];
+        createMainWindow(profile);
+        launcherWindow.close();
+    });
+};
+
+const createMainWindow = (profile: Profile) => {
+    const ServerPath = profile.path;
+    const jarPath = path.join(ServerPath, 'server.jar');
+    const eulaPath = path.join(ServerPath, 'eula.txt');
+    const propertiesPath = path.join(ServerPath, 'server.properties');
+
     const mainWindowState = windowStateKeeper({
         defaultWidth: 1000,
         defaultHeight: 800
@@ -48,15 +85,44 @@ const createWindow = () => {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             webviewTag: true
-        },
+        }
     });
+    mainWindow.removeMenu();
+    mainWindow.loadFile(path.join(__dirname, 'index.html'));
+    mainWindow.once('ready-to-show', () => mainWindow.show());
+    mainWindow.on('close', async (event) => {
+        if (!serverController.isRunning) return;
+        const choice = dialog.showMessageBoxSync(mainWindow, {
+            type: 'question',
+            message: 'アプリケーションを終了する前にサーバーを終了してください',
+            buttons: ['終了', 'キャンセル'],
+        });
+        if (choice === 0) {
+            serverController.stop();
+        } else {
+            event.preventDefault();
+        }
+    });
+    mainWindow.on('closed', () => {
+        consoleWindow?.close();
+    });
+    mainWindowState.manage(mainWindow);
+    if (isDev) {
+        require('electron-search-devtools').searchDevtools('REACT')
+            .then((devtools: string) => {
+                session.defaultSession.loadExtension(devtools, {
+                    allowFileAccess: true,
+                });
+            }).catch((err: Error) => console.log(err));
+        mainWindow.webContents.openDevTools({ mode: 'detach' });
+    }
+
     ipcMain.handle('isInstalled', async () => {
         return fs.existsSync(eulaPath) && fs.readFileSync(eulaPath).toString() === 'eula=true\n';
     });
     ipcMain.handle('install', async (_, version: versions) => {
         try {
-            if (fs.existsSync(ServerPath)) fs.rmdirSync(ServerPath, { recursive: true });
-            fs.mkdirSync(ServerPath);
+            if (!fs.existsSync(ServerPath)) fs.mkdirSync(ServerPath);
             const { data } = await axios.get<Readable>(
                 ServerVersions[version],
                 { responseType: 'stream' }
@@ -103,35 +169,6 @@ const createWindow = () => {
     ipcMain.on('setConfig', (_, config: { [key: string]: string }) => {
         fs.writeFileSync(propertiesPath, properties.stringify(config));
     });
-    mainWindow.removeMenu();
-    mainWindow.loadFile('dist/index.html');
-    mainWindow.on('ready-to-show', () => mainWindow.show());
-    mainWindow.on('close', async (event) => {
-        if (!serverController.isRunning) return;
-        const choice = dialog.showMessageBoxSync(mainWindow, {
-            type: 'question',
-            message: 'アプリケーションを終了する前にサーバーを終了してください',
-            buttons: ['終了', 'キャンセル'],
-        });
-        if (choice === 0) {
-            serverController.stop();
-        } else {
-            event.preventDefault();
-        }
-    });
-    mainWindow.on('closed', () => {
-        if (consoleWindow) consoleWindow.close();
-    });
-    mainWindowState.manage(mainWindow);
-    if (isDev) {
-        require('electron-search-devtools').searchDevtools('REACT')
-            .then((devtools: string) => {
-                session.defaultSession.loadExtension(devtools, {
-                    allowFileAccess: true,
-                });
-            }).catch((err: Error) => console.log(err));
-        mainWindow.webContents.openDevTools({ mode: 'detach' });
-    }
 
     global.consoleWindow = undefined;
     const consoleWindowState = windowStateKeeper({
@@ -151,8 +188,8 @@ const createWindow = () => {
                 }
             });
             consoleWindow.removeMenu();
-            consoleWindow.loadFile('dist/console.html');
-            consoleWindow.on('ready-to-show', () => consoleWindow?.show());
+            consoleWindow.loadFile(path.join(__dirname, 'console.html'));
+            consoleWindow.once('ready-to-show', () => consoleWindow?.show());
             consoleWindow.on('close', () => consoleWindow = undefined);
             consoleWindowState.manage(consoleWindow);
         }
@@ -160,5 +197,13 @@ const createWindow = () => {
     };
 };
 
-app.whenReady().then(createWindow);
+const getProfiles = () => {
+    if (!fs.existsSync(profilePath)) {
+        fs.writeFileSync(profilePath, '{}');
+        return {};
+    }
+    return JSON.parse(fs.readFileSync(profilePath, 'utf-8')) as Profiles;
+};
+
+app.whenReady().then(createLauncherWindow);
 app.once('window-all-closed', () => app.quit());
