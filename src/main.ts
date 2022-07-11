@@ -24,7 +24,6 @@ if (isDev) {
 
 const appDataPath = path.join(app.getPath('appData'), 'MinecraftServerManager');
 const profilePath = path.join(appDataPath, 'profiles.json');
-const logPath = path.join(appDataPath, 'server.log');
 
 const ServerVersions: {[key: string]: string} = {
     '1.19': 'https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar',
@@ -157,7 +156,7 @@ const createMainWindow = (profileId: string) => {
             return false;
         }
     });
-    const serverController = new ServerController(ServerPath, logPath);
+    const serverController = new ServerController(ServerPath);
     ipcMain.handle('start', async () => {
         return await serverController.start();
     });
