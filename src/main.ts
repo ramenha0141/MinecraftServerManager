@@ -123,7 +123,7 @@ const createMainWindow = (profileId: string) => {
     }
 
     ipcMain.handle('isInstalled', async () => {
-        return fs.existsSync(eulaPath) && fs.readFileSync(eulaPath).toString() === 'eula=true\n';
+        return fs.existsSync(eulaPath) && /eula=true/.test(fs.readFileSync(eulaPath).toString());
     });
     ipcMain.handle('install', async (_, version: versions) => {
         try {
