@@ -1,6 +1,5 @@
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import type { ChildProcessWithoutNullStreams } from 'child_process';
 import fs from 'fs';
-import path from 'path';
 
 class ServerController {
     constructor(ServerPath: string, logPath: string) {
@@ -12,6 +11,7 @@ class ServerController {
     isRunning: boolean = false;
     process?: ChildProcessWithoutNullStreams;
     async start(): Promise<boolean> {
+        const spawn = (await import('child_process')).spawn;
         this.process = spawn('java', ['-jar', 'server.jar', '-nogui'], { cwd: this.ServerPath});
         this.process.stdout.pipe(process.stdout);
         if (fs.existsSync(this.logPath)) fs.rmSync(this.logPath);

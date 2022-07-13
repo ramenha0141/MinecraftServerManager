@@ -1,9 +1,7 @@
 import path from 'path';
 import fs from 'fs';
-import axios from 'axios';
-import child_process from 'child_process';
 import { BrowserWindow, app, session, ipcMain, dialog } from 'electron';
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import properties from './properties';
 import ServerController from './ServerController';
 import windowStateKeeper from 'electron-window-state';
@@ -127,6 +125,8 @@ const createMainWindow = (profileId: string) => {
     });
     ipcMain.handle('install', async (_, version: versions) => {
         try {
+            const axios = (await import('axios')).default;
+            const child_process = await import('child_process');
             if (!fs.existsSync(ServerPath)) fs.mkdirSync(ServerPath);
             const { data } = await axios.get<Readable>(
                 ServerVersions[version],
