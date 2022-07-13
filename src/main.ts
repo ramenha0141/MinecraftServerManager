@@ -1,6 +1,5 @@
 import path from 'path';
-import { createWriteStream } from 'fs';
-import fs from 'fs/promises';
+import fs from 'fs';
 import axios from 'axios';
 import child_process from 'child_process';
 import { BrowserWindow, app, session, ipcMain, dialog } from 'electron';
@@ -69,8 +68,8 @@ const createLauncherWindow = () => {
     });
 };
 
-const createMainWindow = async (profileId: string) => {
-    const profiles = await getProfiles();
+const createMainWindow = (profileId: string) => {
+    const profiles = getProfiles();
     const ServerPath = profiles[profileId].path;
     const jarPath = path.join(ServerPath, 'server.jar');
     const eulaPath = path.join(ServerPath, 'eula.txt');
@@ -124,16 +123,16 @@ const createMainWindow = async (profileId: string) => {
     }
 
     ipcMain.handle('isInstalled', async () => {
-        return await exists(eulaPath) && /eula=true/.test(await fs.readFile(eulaPath).toString());
+        return fs.existsSync(eulaPath) && /eula=true/.test(fs.readFileSync(eulaPath).toString());
     });
     ipcMain.handle('install', async (_, version: versions) => {
         try {
-            if (!await exists(ServerPath)) await fs.mkdir(ServerPath);
+            if (!fs.existsSync(ServerPath)) fs.mkdirSync(ServerPath);
             const { data } = await axios.get<Readable>(
                 ServerVersions[version],
                 { responseType: 'stream' }
             );
-            data.pipe(createWriteStream(jarPath));
+            data.pipe(fs.createWriteStream(jarPath));
             return await new Promise<boolean>((resolve) => {
                 data.on('error', () => resolve(false));
                 data.on('end', () => {
@@ -151,7 +150,7 @@ const createMainWindow = async (profileId: string) => {
     });
     ipcMain.handle('agreeEULA', async () => {
         try {
-            await fs.writeFile(eulaPath, 'eula=true\n');
+            fs.writeFileSync(eulaPath, 'eula=true\n');
             return true;
         } catch (e) {
             console.log(e);
@@ -171,11 +170,11 @@ const createMainWindow = async (profileId: string) => {
     ipcMain.on('showConsole', () => {
         showConsole();
     });
-    ipcMain.handle('getConfig', async () => {
-        return properties.parse(await fs.readFile(propertiesPath, 'utf-8'));
+    ipcMain.handle('getConfig', () => {
+        return properties.parse(fs.readFileSync(propertiesPath, 'utf-8'));
     });
-    ipcMain.on('setConfig', async (_, config: { [key: string]: string }) => {
-        fs.writeFile(propertiesPath, properties.stringify(config));
+    ipcMain.on('setConfig', (_, config: { [key: string]: string }) => {
+        fs.writeFileSync(propertiesPath, properties.stringify(config));
     });
 
     global.consoleWindow = undefined;
@@ -198,10 +197,10 @@ const createMainWindow = async (profileId: string) => {
             });
             consoleWindow.removeMenu();
             consoleWindow.loadFile(path.join(__dirname, 'console.html'));
-            consoleWindow.once('ready-to-show', async () => {
+            consoleWindow.once('ready-to-show', () => {
                 consoleWindow?.show();
                 consoleWindow?.focus();
-                if (await exists(logPath)) consoleWindow?.webContents.send('data', fs.readFile(logPath, 'utf-8'));
+                if (fs.existsSync(logPath)) consoleWindow?.webContents.send('data', fs.readFileSync(logPath, 'utf-8'));
             });
             consoleWindow.on('close', () => consoleWindow = undefined);
             consoleWindowState.manage(consoleWindow);
@@ -211,23 +210,15 @@ const createMainWindow = async (profileId: string) => {
     };
 };
 
-const exists = async (path: string): Promise<boolean> => {
-    try {
-        return !!await fs.stat(path);
-    } catch (e) {
-        return false;
-    }
-};
-
-const getProfiles = async () => {
-    if (!await exists(profilePath)) {
-        await fs.writeFile(profilePath, '{}');
+const getProfiles = () => {
+    if (!fs.existsSync(profilePath)) {
+        fs.writeFileSync(profilePath, '{}');
         return {};
     }
-    return JSON.parse(await fs.readFile(profilePath, 'utf-8')) as Profiles;
+    return JSON.parse(fs.readFileSync(profilePath, 'utf-8')) as Profiles;
 };
 const setProfiles = (profiles: Profiles) => {
-    fs.writeFile(profilePath, JSON.stringify(profiles), 'utf-8');
+    fs.writeFileSync(profilePath, JSON.stringify(profiles), 'utf-8');
 };
 
 app.whenReady().then(createLauncherWindow);
