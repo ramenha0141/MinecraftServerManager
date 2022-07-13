@@ -18,7 +18,7 @@ const Config = () => {
         </Box>
     );
     return (
-        <TableContainer component={Paper} sx={{ flex: '1 1 0', overflowY: 'scroll' }}>
+        <TableContainer component={Paper} sx={{ flexGrow: 1, flexBasis: 0, overflowY: 'scroll' }}>
             <Table stickyHeader>
                 <TableHead>
                     <TableRow>

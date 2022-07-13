@@ -2,8 +2,6 @@ import { Alert, Button, ButtonGroup, Snackbar } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import TerminalIcon from '@mui/icons-material/Terminal';
-import { useRecoilState } from 'recoil';
-import { isServerRunningState } from './globalState';
 import { useState } from 'react';
 
 const ServerAPI = window.ServerAPI;
@@ -11,7 +9,7 @@ const ServerAPI = window.ServerAPI;
 type alertType = 'startSuccess' | 'startFailed' | 'stopSuccess';
 
 const Control = () => {
-    const [isServerRunning, setIsServerRunning] = useRecoilState(isServerRunningState);
+    const [isServerRunning, setIsServerRunning] = useState<boolean>(false);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [isShowAlert, setIsShowAlert] = useState<boolean>(false);
     const [alertType, setAlertType] = useState<alertType>();

@@ -1,17 +1,14 @@
-import { Backdrop, Box, Button, CircularProgress, InputLabel, MenuItem, Select, SelectChangeEvent, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import { Backdrop, Box, Button, CircularProgress, MenuItem, Select, SelectChangeEvent, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import { useState } from 'react';
-import { useSetRecoilState } from 'recoil';
 import { versions } from '../@types/global';
 
-import { isInstalledState } from './globalState';
 
 const ServerAPI = window.ServerAPI;
 
 const steps = ['インストール', 'EULA', '完了'];
-const Setup = () => {
+const Setup = (props: { setIsInstalled: (value: boolean) => void }) => {
     const [currentStep, setCurrentStep] = useState<number>(0);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
-    const setIsInstalled = useSetRecoilState(isInstalledState);
     const [version, setVersion] = useState<versions>('1.19');
     const handleVersionChange = (event: SelectChangeEvent) => {
         setVersion(event.target.value as versions);
@@ -34,7 +31,7 @@ const Setup = () => {
     };
     const handleFinish = async () => {
         setCurrentStep(3);
-        setIsInstalled(true);
+        props.setIsInstalled(true);
     };
     return (
         <Box sx={{
