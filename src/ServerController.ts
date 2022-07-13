@@ -1,6 +1,6 @@
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import fs from 'fs/promises';
-import exists from './exists';
+import fs from 'fs';
+import path from 'path';
 
 class ServerController {
     constructor(ServerPath: string, logPath: string) {
@@ -12,13 +12,13 @@ class ServerController {
     isRunning: boolean = false;
     process?: ChildProcessWithoutNullStreams;
     async start(): Promise<boolean> {
-        if (await exists(this.logPath)) fs.rm(this.logPath);
         this.process = spawn('java', ['-jar', 'server.jar', '-nogui'], { cwd: this.ServerPath});
         this.process.stdout.pipe(process.stdout);
+        if (fs.existsSync(this.logPath)) fs.rmSync(this.logPath);
         this.process.stdout.on('data', (data: Buffer) => {
             const str = data.toString();
             consoleWindow?.webContents.send('data', str);
-            fs.appendFile(this.logPath, str, 'utf-8');
+            fs.appendFileSync(this.logPath, str, 'utf-8');
         });
         this.isRunning = true;
         return waitForStartup(this.process);
@@ -28,7 +28,7 @@ class ServerController {
         this.process.stdin.write('stop\n');
         await waitForStop(this.process);
         this.isRunning = false;
-        if (await exists(this.logPath)) fs.rm(this.logPath);
+        if (fs.existsSync(this.logPath)) fs.rmSync(this.logPath);
         return true;
     }
 }

@@ -1,7 +1,6 @@
 import path from 'path';
 import { createWriteStream } from 'fs';
 import fs from 'fs/promises';
-import exists from './exists';
 import axios from 'axios';
 import child_process from 'child_process';
 import { BrowserWindow, app, session, ipcMain, dialog } from 'electron';
@@ -212,6 +211,13 @@ const createMainWindow = async (profileId: string) => {
     };
 };
 
+const exists = async (path: string): Promise<boolean> => {
+    try {
+        return !!await fs.stat(path);
+    } catch (e) {
+        return false;
+    }
+};
 
 const getProfiles = async () => {
     if (!await exists(profilePath)) {
