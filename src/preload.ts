@@ -28,6 +28,18 @@ const api: ServerAPI = {
     },
     setConfig: (config: {[key: string]: string}) => {
         ipcRenderer.send('setConfig', config);
+    },
+    getBackups: () => {
+        return ipcRenderer.invoke('getBackups');
+    },
+    createBackup: () => {
+        return ipcRenderer.invoke('createBackup');
+    },
+    deleteBackup: (backup: number) => {
+        return ipcRenderer.invoke('deleteBackup', backup);
+    },
+    restore: (backup: number) => {
+        return ipcRenderer.invoke('restore', backup);
     }
 };
 contextBridge.exposeInMainWorld('ServerAPI', api);

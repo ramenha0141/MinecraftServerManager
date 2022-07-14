@@ -22,7 +22,11 @@ export interface ServerAPI {
     togglePerformance: () => void,
     showConsole: () => void,
     getConfig: () => Promise<{[key: string]: string}>,
-    setConfig: (config: {[key: string]: string}) => void
+    setConfig: (config: {[key: string]: string}) => void,
+    getBackups: () => Promise<number[]>,
+    createBackup: () => Promise<boolean>,
+    deleteBackup: (backup: number) => Promise<number[]>,
+    restore: (backup: number) => Promise<boolean>
 }
 
 export interface ConsoleAPI {

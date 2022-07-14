@@ -46,7 +46,7 @@ const App = () => {
                                     key={i}
                                     disablePadding
                                     secondaryAction={
-                                        <IconButton edge="end" aria-label="delete" onClick={() => {
+                                        <IconButton edge='end' onClick={() => {
                                             setDeleteProfileId(profileId);
                                             setIsShowDeleteDialog(true);
                                         }}>

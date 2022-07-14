@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import { copySync } from 'fs-extra';
 import { BrowserWindow, app, session, ipcMain, dialog } from 'electron';
 import type { Readable } from 'stream';
 import properties from './properties';
@@ -23,7 +24,7 @@ if (isDev) {
 const appDataPath = path.join(app.getPath('appData'), 'MinecraftServerManager');
 const profilePath = path.join(appDataPath, 'profiles.json');
 
-const ServerVersions: {[key: string]: string} = {
+const ServerVersions: { [key: string]: string } = {
     '1.19': 'https://launcher.mojang.com/v1/objects/e00c4052dac1d59a1188b2aa9d5a87113aaf1122/server.jar',
     '1.18.2': 'https://launcher.mojang.com/v1/objects/c8f83c5655308435b3dcf03c06d9fe8740a77469/server.jar',
     '1.16.5': 'https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar',
@@ -61,6 +62,7 @@ const createLauncherWindow = () => {
         return result.filePaths[0];
     });
     ipcMain.on('launch', (_, profileId: string) => {
+        ipcMain.removeAllListeners();
         createMainWindow(profileId);
         launcherWindow.close();
     });
@@ -73,6 +75,8 @@ const createMainWindow = (profileId: string) => {
     const eulaPath = path.join(ServerPath, 'eula.txt');
     const propertiesPath = path.join(ServerPath, 'server.properties');
     const logPath = path.join(ServerPath, 'server.log');
+    const backupPath = path.join(ServerPath, 'backup');
+    const worldPath = path.join(ServerPath, 'world');
 
     const mainWindowState = windowStateKeeper({
         defaultWidth: 1000,
@@ -176,6 +180,43 @@ const createMainWindow = (profileId: string) => {
     ipcMain.on('setConfig', (_, config: { [key: string]: string }) => {
         fs.writeFileSync(propertiesPath, properties.stringify(config));
     });
+    ipcMain.handle('getBackups', () => {
+        return getBackups(backupPath);
+    });
+    ipcMain.handle('createBackup', () => {
+        if (!fs.existsSync(backupPath)) fs.mkdirSync(backupPath);
+        const backup = (new Date()).getTime().toString();
+        if (fs.existsSync(path.join(backupPath, backup))) return false;
+        try {
+            copySync(worldPath, path.join(backupPath, backup));
+            return true;
+        } catch (e) {
+            console.log(e);
+            return false;
+        }
+    });
+    ipcMain.handle('deleteBackup', (_, backup: number) => {
+        try {
+            fs.rmSync(path.join(backupPath, backup.toString()), { recursive: true, force: true });
+            return true;
+        } catch (e) {
+            console.log(e);
+            return false;
+        }
+    });
+    ipcMain.handle('restore', (_, backup: number) => {
+        if (serverController.isRunning) return false;
+        if (!fs.existsSync(path.join(backupPath, backup.toString()))) return false;
+        try {
+            fs.rmSync(worldPath, { recursive: true, force: true });
+            copySync(path.join(backupPath, backup.toString()), worldPath);
+            return true;
+        } catch (e) {
+            console.log(e);
+            return false;
+        }
+    });
+
 
     global.consoleWindow = undefined;
     const consoleWindowState = windowStateKeeper({
@@ -219,6 +260,18 @@ const getProfiles = () => {
 };
 const setProfiles = (profiles: Profiles) => {
     fs.writeFileSync(profilePath, JSON.stringify(profiles), 'utf-8');
+};
+const getBackups = (backupPath: string) => {
+    if (!fs.existsSync(backupPath)) fs.mkdirSync(backupPath);
+    const entries = fs.readdirSync(backupPath, { withFileTypes: true });
+    const backups = [];
+    for (const entry of entries) {
+        if (entry.isDirectory()) {
+            backups.push(parseInt(entry.name));
+        }
+    }
+    backups.sort((a, b) => b - a);
+    return backups;
 };
 
 app.whenReady().then(createLauncherWindow);
