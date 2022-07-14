@@ -15,7 +15,7 @@ import Main from './Main';
 const ServerAPI = window.ServerAPI;
 
 const App = () => {
-    const [isInstalled, setIsInstalled] = useState<boolean>(false);
+    const [isInstalled, setIsInstalled] = useState<boolean | null>(null);
     useEffect(() => {
         ServerAPI.isInstalled().then((isInstalled) => setIsInstalled(isInstalled));
     });
@@ -43,7 +43,7 @@ const App = () => {
             }
             <Dialog
                 fullScreen
-                open={!isInstalled}
+                open={isInstalled === false}
             >
                 <AppBar position='relative'>
                     <Toolbar>

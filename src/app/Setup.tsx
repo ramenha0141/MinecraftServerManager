@@ -1,5 +1,5 @@
 import { Backdrop, Box, Button, CircularProgress, MenuItem, Select, SelectChangeEvent, Step, StepLabel, Stepper, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { versions } from '../@types/global';
 
 
@@ -33,7 +33,7 @@ const Setup = (props: { setIsInstalled: (value: boolean) => void }) => {
         setCurrentStep(3);
         props.setIsInstalled(true);
     };
-    return (
+    return useMemo(() => (
         <Box sx={{
             flexGrow: 1,
             px: 4,
@@ -119,6 +119,6 @@ const Setup = (props: { setIsInstalled: (value: boolean) => void }) => {
                 <CircularProgress color="inherit" />
             </Backdrop>
         </Box>
-    );
+    ), [currentStep, isProcessing, version]);
 };
 export default Setup;
