@@ -3,7 +3,7 @@
   "productName": "MinecraftServerManager",
   "description": "Manager for Minecraft Server",
   "author": "Ra-men_ha_0141",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "license": "MIT",
   "main": "dist/main.js",
   "scripts": {
