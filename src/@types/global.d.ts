@@ -30,7 +30,8 @@ export interface ServerAPI {
 }
 
 export interface ConsoleAPI {
-    onData: (callback: (event: IpcRendererEvent, ...args: any[]) => void) => void
+    onData: (callback: (event: IpcRendererEvent, ...args: any[]) => void) => void,
+    sendCommand: (text: string) => void
 }
 
 declare global {

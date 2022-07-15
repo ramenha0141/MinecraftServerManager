@@ -31,6 +31,10 @@ class ServerController {
         if (fs.existsSync(this.logPath)) fs.rmSync(this.logPath);
         return true;
     }
+    command(text: string) {
+        if (!this.process) return;
+        this.process.stdin.write(text + '\n');
+    }
 }
 export default ServerController;
 

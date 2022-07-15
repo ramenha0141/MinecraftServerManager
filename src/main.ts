@@ -216,6 +216,9 @@ const createMainWindow = (profileId: string) => {
             return false;
         }
     });
+    ipcMain.on('command', (_, text: string) => {
+        serverController.command(text);
+    });
 
 
     global.consoleWindow = undefined;

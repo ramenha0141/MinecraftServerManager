@@ -15,16 +15,32 @@
         #root {
             width: 100vw;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #output {
+            flex-grow: 1;
             background-color: #000;
             color: #fff;
             overflow-wrap: break-word;
             overflow-y: scroll;
         }
+        #input {
+            flex-shrink: 0;
+            width: 100%;
+            height: 24px;
+            line-height: 24px;
+            font-size: 16px;
+            padding: 0 4px;
+        }
     </style>
 </head>
 
 <body>
-    <div id='root'></div>
+    <div id='root'>
+        <div id='output'></div>
+        <input autofocus type='text' id='input'>
+    </div>
 </body>
 
 </html>
