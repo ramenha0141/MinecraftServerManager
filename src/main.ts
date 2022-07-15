@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'fs';
-import { copySync } from 'fs-extra';
 import { BrowserWindow, app, session, ipcMain, dialog } from 'electron';
 import type { Readable } from 'stream';
 import properties from './properties';
@@ -188,7 +187,7 @@ const createMainWindow = (profileId: string) => {
         const backup = (new Date()).getTime().toString();
         if (fs.existsSync(path.join(backupPath, backup))) return false;
         try {
-            copySync(worldPath, path.join(backupPath, backup));
+            require('fs-extra').copySync(worldPath, path.join(backupPath, backup));
             return true;
         } catch (e) {
             console.log(e);
@@ -209,7 +208,7 @@ const createMainWindow = (profileId: string) => {
         if (!fs.existsSync(path.join(backupPath, backup.toString()))) return false;
         try {
             fs.rmSync(worldPath, { recursive: true, force: true });
-            copySync(path.join(backupPath, backup.toString()), worldPath);
+            require('fs-extra').copySync(path.join(backupPath, backup.toString()), worldPath);
             return true;
         } catch (e) {
             console.log(e);
