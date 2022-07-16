@@ -17,9 +17,6 @@ const api: ServerAPI = {
     stop: (): Promise<boolean> => {
         return ipcRenderer.invoke('stop');
     },
-    togglePerformance: () => {
-        ipcRenderer.send('togglePerformance');
-    },
     showConsole: () => {
         ipcRenderer.send('showConsole');
     },

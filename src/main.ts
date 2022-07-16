@@ -167,9 +167,6 @@ const createMainWindow = (profileId: string) => {
     ipcMain.handle('stop', async () => {
         return await serverController.stop();
     });
-    ipcMain.on('togglePerformance', () => {
-
-    });
     ipcMain.on('showConsole', () => {
         showConsole();
     });
