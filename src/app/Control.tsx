@@ -1,4 +1,5 @@
 import { Alert, Button, ButtonGroup, Snackbar } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import TerminalIcon from '@mui/icons-material/Terminal';
@@ -47,16 +48,18 @@ const Control = () => {
         return (
             <>
                 <ButtonGroup variant='contained' sx={{ mr: 10, backgroundColor: '#fff' }}>
-                    <Button
+                    <LoadingButton
                         variant='outlined'
                         disabled={isServerRunning || isProcessing}
                         onClick={handleStart}
-                    ><PlayArrowIcon /></Button>
-                    <Button
+                        loading={isProcessing && !isServerRunning}
+                    ><PlayArrowIcon /></LoadingButton>
+                    <LoadingButton
                         variant='outlined'
                         disabled={!isServerRunning || isProcessing}
                         onClick={handleStop}
-                    ><StopIcon /></Button>
+                        loading={isProcessing && isServerRunning}
+                    ><StopIcon /></LoadingButton>
                     <Button
                         variant='outlined'
                         onClick={handleShowConsole}
